@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HelpDesk Tracker</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">HD</span>
+      <div>
+        <h1>HelpDesk Tracker</h1>
+        <p>Tier-two production support</p>
+      </div>
+    </div>
+    <label class="acting-as">
+      Signed in as
+      <select id="currentUser" aria-label="Current user"></select>
+    </label>
+  </header>
+
+  <main>
+    <section class="stats" aria-label="Summary">
+      <div class="stat"><span class="stat-value" id="statOpen">–</span><span class="stat-label">Open incidents</span></div>
+      <div class="stat critical"><span class="stat-value" id="statCritical">–</span><span class="stat-label">Critical open</span></div>
+      <div class="stat"><span class="stat-value" id="statUnassigned">–</span><span class="stat-label">Unassigned</span></div>
+      <div class="stat"><span class="stat-value" id="statResolved">–</span><span class="stat-label">Resolved (7 days)</span></div>
+      <div class="stat"><span class="stat-value" id="statAvg">–</span><span class="stat-label">Avg hours to resolve</span></div>
+    </section>
+
+    <div class="layout">
+      <section class="panel list-panel">
+        <form class="toolbar" id="filterForm">
+          <input type="search" id="searchText" placeholder="Search title or description" aria-label="Search">
+          <select id="statusFilter" aria-label="Status">
+            <option value="">All statuses</option>
+          </select>
+          <select id="priorityFilter" aria-label="Priority">
+            <option value="">All priorities</option>
+          </select>
+          <label class="check"><input type="checkbox" id="mineOnly"> Assigned to me</label>
+          <span class="spacer"></span>
+          <button type="button" class="btn secondary" id="exportBtn">Export XML</button>
+          <button type="button" class="btn primary" id="newBtn">New incident</button>
+        </form>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Title</th><th>Priority</th><th>Status</th>
+                <th>Application</th><th>Assigned to</th><th>SLA due</th>
+              </tr>
+            </thead>
+            <tbody id="incidentRows">
+              <tr><td colspan="7" class="empty">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside class="panel detail-panel" id="detailPanel" hidden>
+        <div class="detail-head">
+          <div>
+            <span class="muted" id="dId"></span>
+            <h2 id="dTitle"></h2>
+          </div>
+          <button class="icon-btn" id="closeDetail" aria-label="Close details">✕</button>
+        </div>
+        <div class="badges" id="dBadges"></div>
+        <dl class="facts">
+          <dt>Application</dt><dd id="dApp"></dd>
+          <dt>Reported by</dt><dd id="dReporter"></dd>
+          <dt>Assigned to</dt><dd id="dAssignee"></dd>
+          <dt>Created</dt><dd id="dCreated"></dd>
+          <dt>SLA due</dt><dd id="dSla"></dd>
+        </dl>
+        <p class="description" id="dDescription"></p>
+        <div id="dResolutionBlock" hidden>
+          <h3>Root cause</h3><p id="dRootCause"></p>
+          <h3>Resolution</h3><p id="dResolution"></p>
+        </div>
+
+        <form id="statusForm" class="subform">
+          <h3>Update status</h3>
+          <div class="row">
+            <label>New status <select id="newStatus" required></select></label>
+            <label>Assign to <select id="assignTo"><option value="">(keep current)</option></select></label>
+          </div>
+          <div id="resolveFields" hidden>
+            <label>Root cause <textarea id="rootCause" rows="2" maxlength="1000"></textarea></label>
+            <label>Resolution <textarea id="resolution" rows="2" maxlength="1000"></textarea></label>
+          </div>
+          <button class="btn primary" type="submit">Save status</button>
+        </form>
+
+        <section class="subform">
+          <h3>Notes</h3>
+          <ol class="notes" id="dNotes"></ol>
+          <form id="noteForm">
+            <textarea id="noteText" rows="2" maxlength="2000" placeholder="Add a note" required></textarea>
+            <div class="row between">
+              <label class="check"><input type="checkbox" id="noteInternal" checked> Internal only</label>
+              <button class="btn secondary" type="submit">Add note</button>
+            </div>
+          </form>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <dialog id="newDialog">
+    <form id="newForm" method="dialog" class="dialog-form">
+      <h2>New incident</h2>
+      <label>Title <input id="nTitle" required minlength="5" maxlength="200"></label>
+      <label>Description <textarea id="nDescription" rows="4" required minlength="10" maxlength="4000"></textarea></label>
+      <div class="row">
+        <label>Category <select id="nCategory" required></select></label>
+        <label>Priority <select id="nPriority" required></select></label>
+      </div>
+      <div class="row end">
+        <button type="button" class="btn secondary" id="cancelNew">Cancel</button>
+        <button type="submit" class="btn primary">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
